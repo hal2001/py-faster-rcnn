@@ -5,6 +5,8 @@
 # Written by Ross Girshick
 # --------------------------------------------------------
 
+import sys
+sys.path.append('..')
 import os
 from datasets.imdb import imdb
 import datasets.ds_utils as ds_utils

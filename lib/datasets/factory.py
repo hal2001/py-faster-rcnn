@@ -32,7 +32,9 @@ for year in ['2015']:
         name = 'coco_{}_{}'.format(year, split)
         __sets[name] = (lambda split=split, year=year: coco(split, year))
 
-__sets['unrealcv'] = (lambda: unrealcv('RealisticRendering'))
+for el in range(0, 61, 30):
+    for az in range(90, 271, 45):
+        __sets['unrealcv_%d_%d' % (el, az)] = (lambda el=el, az=az: unrealcv('RealisticRendering', '%d_%d' % (el, az)))
 
 def get_imdb(name):
     """Get an imdb (image database) by name."""

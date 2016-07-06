@@ -8,8 +8,8 @@ import uuid
 import cPickle
 
 class unrealcv(imdb):
-    def __init__(self, gamename):
-        imdb.__init__(self, gamename)
+    def __init__(self, gamename, image_set):
+        imdb.__init__(self, '%s_%s' % (gamename, image_set))
 
         classes = ('__background__', # always index 0
                          'aeroplane', 'bicycle', 'bird', 'boat',
@@ -21,8 +21,10 @@ class unrealcv(imdb):
         self._data_path = os.path.join(cfg.DATA_DIR, 'unrealcv')
         self._classes = classes
 
-        self._image_set = 'test'
+        # self._image_set = 'test'
+        self._image_set = image_set
         self._image_ext = '.png'
+        self._image_set_file = os.path.join(self._data_path, 'image_set', self._image_set + '.txt')
         self._image_index = self._load_image_set_index()
 
         self._comp_id = 'comp4'
@@ -53,13 +55,10 @@ class unrealcv(imdb):
         Load the indexes listed in this dataset's image set file.
         """
         # Example path to image set file:
-        # image_set_file = os.path.join(self._data_path, 'ImageSets', 'Main',
-        #                               self._image_set + '.txt')
-        image_set_file = os.path.join(self._data_path, self._image_set + '.txt')
 
-        assert os.path.exists(image_set_file), \
-                'Path does not exist: {}'.format(image_set_file)
-        with open(image_set_file) as f:
+        assert os.path.exists(self._image_set_file), \
+                'Path does not exist: {}'.format(self._image_set_file)
+        with open(self._image_set_file) as f:
             image_index = [x.strip() for x in f.readlines()]
         return image_index
 
@@ -135,9 +134,8 @@ class unrealcv(imdb):
 
     def _do_python_eval(self, output_dir = 'output'):
         annopath = os.path.join(self._data_path, 'xml', '{:s}.xml')
-        imagesetfile = os.path.join(self._data_path, self._image_set + '.txt')
 
-        cachedir = os.path.join(self._data_path, 'annotations_cache')
+        cachedir = os.path.join(self._data_path, 'annotations_cache', self._image_set)
         aps = []
         # The PASCAL VOC metric changed in 2010
         # use_07_metric = True if int(self._year) < 2010 else False
@@ -146,12 +144,12 @@ class unrealcv(imdb):
         if not os.path.isdir(output_dir):
             os.mkdir(output_dir)
         # for i, cls in enumerate(self._classes):
-        for i, cls in enumerate(['sofa', 'chair']):
+        for i, cls in enumerate(['sofa']): # Only evaluate sofa
             if cls == '__background__':
                 continue
             filename = self._get_voc_results_file_template().format(cls)
             rec, prec, ap = voc_eval(
-                filename, annopath, imagesetfile, cls, cachedir, ovthresh=0.5,
+                filename, annopath, self._image_set_file, cls, cachedir, ovthresh=0.5,
                 use_07_metric=use_07_metric)
             aps += [ap]
             print('AP for {} = {:.4f}'.format(cls, ap))
@@ -175,8 +173,8 @@ class unrealcv(imdb):
     def evaluate_detections(self, all_boxes, output_dir):
         self._write_voc_results_file(all_boxes)
         self._do_python_eval(output_dir)
-        if self.config['matlab_eval']:
-            self._do_matlab_eval(output_dir)
+        # if self.config['matlab_eval']:
+        #     self._do_matlab_eval(output_dir)
         if self.config['cleanup']:
             for cls in self._classes:
                 if cls == '__background__':
@@ -225,6 +223,6 @@ class unrealcv(imdb):
 if __name__ == '__main__':
     # Directly use the classes of VOC, because the model is trained using these classes
 
-    d = unrealcv('RealisticRendering')
+    d = unrealcv('RealisticRendering', '0_90')
     print d.image_path_at(1)
     print d.image_path_from_index('0_90_200')
