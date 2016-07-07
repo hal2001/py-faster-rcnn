@@ -52,11 +52,11 @@ for el in el_range:
 cls = 'sofa'
 
 table = ''
-header = '%9s' % 'el/az' + ''.join(['%9.3f' % az for az in az_range])
-table += header + '\n'
+header = '%30s & ' % '\diagbox{Elevation}{Azimuth}' + ' & '.join(['%9.3f' % az for az in az_range])
+table += header + '\\\\ \n' + '\hline\n'
 
 for el in el_range:
-    row = '%9d' % el
+    row = '%30d' % el
     for az in az_range:
         imdb_name = 'unrealcv_%d_%d' % (el, az)
         imdb = get_imdb(imdb_name)
@@ -64,7 +64,7 @@ for el in el_range:
         output_dir = get_output_dir(imdb, net)
         with open(os.path.join(output_dir, cls + '_pr.pkl')) as f:
             result = cPickle.load(f)
-        row += '%9.3f' % result['ap']
-    table += row + '\n'
+        row += ' & %9.3f' % result['ap']
+    table += row + '\\\\ \n'
 
 print table
