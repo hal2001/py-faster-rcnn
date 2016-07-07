@@ -10,7 +10,6 @@ cfg_from_file(cfg_file)
 cfg.GPU_ID = 0
 
 max_per_image = 100
-vis = False
 
 print('Using config:')
 pprint.pprint(cfg)
@@ -42,12 +41,12 @@ for el in el_range:
     for az in az_range:
         imdb_names.append('unrealcv_%d_%d' % (el, az))
 
-# for imdb_name in imdb_names:
-#     print imdb_name
-#     imdb = get_imdb(imdb_name)
-#     imdb.competition_mode(comp_mode)
-#     test_net(net, imdb, max_per_image=max_per_image, vis=vis)
-#
+vis = True
+for imdb_name in imdb_names:
+    print imdb_name
+    imdb = get_imdb(imdb_name)
+    imdb.competition_mode(comp_mode)
+    test_net(net, imdb, max_per_image=max_per_image, vis=vis)
 
 cls = 'sofa'
 

@@ -190,6 +190,7 @@ def vis_detections(im, class_name, dets, thresh=0.3, savefile=None):
     for i in xrange(np.minimum(10, dets.shape[0])):
         bbox = dets[i, :4]
         score = dets[i, -1]
+        print score, thresh
         if score > thresh:
             plt.cla()
             plt.imshow(im)
@@ -200,10 +201,17 @@ def vis_detections(im, class_name, dets, thresh=0.3, savefile=None):
                               edgecolor='g', linewidth=3)
                 )
             plt.title('{}  {:.3f}'.format(class_name, score))
+
             if not savefile:
+                print 'Plot'
                 plt.show()
             else:
-                plt.savefig('%s_%d.png' % (savefile, i))
+                figfile = '%s_%d.png' % (savefile, i)
+                print 'Save to ', figfile
+                folder = os.path.dirname(figfile)
+                if not os.path.isdir(folder):
+                    os.mkdir(folder)
+                plt.savefig(figfile)
 
 
 def apply_nms(all_boxes, thresh):
@@ -274,8 +282,8 @@ def test_net(net, imdb, max_per_image=100, thresh=0.05, vis=False):
             cls_dets = cls_dets[keep, :]
             if vis:
                 savefile = os.path.basename(imdb.image_path_at(i)).split('.')[0] + '_' + imdb.classes[j]
-                print savefile
-                vis_detections(im, imdb.classes[j], cls_dets, savefile)
+                savefile = os.path.join(output_dir, imdb.classes[j], savefile)
+                vis_detections(im, imdb.classes[j], cls_dets, 0.3, savefile)
             all_boxes[j][i] = cls_dets
 
         # Limit to max_per_image detections *over all classes*
