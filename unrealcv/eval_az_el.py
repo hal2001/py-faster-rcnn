@@ -1,9 +1,19 @@
 import _init_paths
 from fast_rcnn.test import test_net
 from fast_rcnn.config import cfg, cfg_from_file, cfg_from_list, get_output_dir
-from datasets.factory import get_imdb
+# from datasets.factory import get_imdb
 import caffe
 import time, os, sys, pprint, cPickle
+
+for el in range(0, 61, 30):
+    for az in range(90, 271, 45):
+        __sets['unrealcv_%d_%d' % (el, az)] = (lambda el=el, az=az: unrealcv('RealisticRendering', '%d_%d' % (el, az)))
+
+def get_imdb(name):
+    """Get an imdb (image database) by name."""
+    if not __sets.has_key(name):
+        raise KeyError('Unknown dataset: {}'.format(name))
+    return __sets[name]()
 
 cfg_file = './experiments/cfgs/faster_rcnn_alt_opt.yml'
 cfg_from_file(cfg_file)
