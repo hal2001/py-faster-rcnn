@@ -1,10 +1,12 @@
-import _init_paths
+import init_paths
 from fast_rcnn.test import test_net
 from fast_rcnn.config import cfg, cfg_from_file, cfg_from_list, get_output_dir
 # from datasets.factory import get_imdb
 import caffe
 import time, os, sys, pprint, cPickle
+from unrealcv import unrealcv
 
+__sets = dict()
 for el in range(0, 61, 30):
     for az in range(90, 271, 45):
         __sets['unrealcv_%d_%d' % (el, az)] = (lambda el=el, az=az: unrealcv('RealisticRendering', '%d_%d' % (el, az)))
@@ -15,7 +17,7 @@ def get_imdb(name):
         raise KeyError('Unknown dataset: {}'.format(name))
     return __sets[name]()
 
-cfg_file = './experiments/cfgs/faster_rcnn_alt_opt.yml'
+cfg_file = '../experiments/cfgs/faster_rcnn_alt_opt.yml'
 cfg_from_file(cfg_file)
 cfg.GPU_ID = 0
 
@@ -24,7 +26,7 @@ max_per_image = 100
 print('Using config:')
 pprint.pprint(cfg)
 
-caffemodel = 'data/faster_rcnn_models/VGG16_faster_rcnn_final.caffemodel'
+caffemodel = '../data/faster_rcnn_models/VGG16_faster_rcnn_final.caffemodel'
 
 wait = 1
 while not os.path.exists(caffemodel) and wait:
@@ -34,7 +36,7 @@ while not os.path.exists(caffemodel) and wait:
 
 caffe.set_mode_gpu()
 caffe.set_device(cfg.GPU_ID)
-prototxt = 'models/pascal_voc/VGG16/faster_rcnn_alt_opt/faster_rcnn_test.pt'
+prototxt = '../models/pascal_voc/VGG16/faster_rcnn_alt_opt/faster_rcnn_test.pt'
 
 net = caffe.Net(prototxt, caffemodel, caffe.TEST)
 net.name = os.path.splitext(os.path.basename(caffemodel))[0]

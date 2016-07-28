@@ -2,7 +2,7 @@ import sys, os
 sys.path.append('..')
 from datasets.imdb import imdb
 import numpy as np
-from voc_eval import voc_eval
+from datasets.voc_eval import voc_eval
 from fast_rcnn.config import cfg
 import uuid
 import cPickle
