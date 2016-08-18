@@ -183,13 +183,14 @@ def im_detect(net, im, boxes=None):
 
     return scores, pred_boxes
 
-def vis_detections(im, class_name, dets, thresh=0.3):
+def vis_detections(im, class_name, dets, thresh=0.3, savefile=None):
     """Visual debugging of detections."""
     import matplotlib.pyplot as plt
     im = im[:, :, (2, 1, 0)]
     for i in xrange(np.minimum(10, dets.shape[0])):
         bbox = dets[i, :4]
         score = dets[i, -1]
+        print score, thresh
         if score > thresh:
             plt.cla()
             plt.imshow(im)
@@ -200,7 +201,18 @@ def vis_detections(im, class_name, dets, thresh=0.3):
                               edgecolor='g', linewidth=3)
                 )
             plt.title('{}  {:.3f}'.format(class_name, score))
-            plt.show()
+
+            if not savefile:
+                print 'Plot'
+                plt.show()
+            else:
+                figfile = '%s_%d.png' % (savefile, i)
+                print 'Save to ', figfile
+                folder = os.path.dirname(figfile)
+                if not os.path.isdir(folder):
+                    os.mkdir(folder)
+                plt.savefig(figfile)
+
 
 def apply_nms(all_boxes, thresh):
     """Apply non-maximum suppression to all predicted boxes output by the
@@ -269,7 +281,9 @@ def test_net(net, imdb, max_per_image=100, thresh=0.05, vis=False):
             keep = nms(cls_dets, cfg.TEST.NMS)
             cls_dets = cls_dets[keep, :]
             if vis:
-                vis_detections(im, imdb.classes[j], cls_dets)
+                savefile = os.path.basename(imdb.image_path_at(i)).split('.')[0] + '_' + imdb.classes[j]
+                savefile = os.path.join(output_dir, imdb.classes[j], savefile)
+                vis_detections(im, imdb.classes[j], cls_dets, 0.3, savefile)
             all_boxes[j][i] = cls_dets
 
         # Limit to max_per_image detections *over all classes*

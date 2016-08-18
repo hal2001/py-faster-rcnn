@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 import os
 import cPickle
 import numpy as np
+import math
 
 def parse_rec(filename):
     """ Parse a PASCAL VOC xml file """
@@ -93,6 +94,7 @@ def voc_eval(detpath,
     # assumes imagesetfile is a text file with each line an image name
     # cachedir caches the annotations in a pickle file
 
+    print 'eval class:', classname
     # first load gt
     if not os.path.isdir(cachedir):
         os.mkdir(cachedir)
@@ -115,6 +117,7 @@ def voc_eval(detpath,
         with open(cachefile, 'w') as f:
             cPickle.dump(recs, f)
     else:
+        print 'Load annotation from cache:', cachefile
         # load
         with open(cachefile, 'r') as f:
             recs = cPickle.load(f)
@@ -196,5 +199,6 @@ def voc_eval(detpath,
     # ground truth
     prec = tp / np.maximum(tp + fp, np.finfo(np.float64).eps)
     ap = voc_ap(rec, prec, use_07_metric)
+    assert not math.isnan(ap), 'AP can not be nan'
 
     return rec, prec, ap
