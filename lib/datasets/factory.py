@@ -11,6 +11,7 @@ __sets = {}
 
 from datasets.pascal_voc import pascal_voc
 from datasets.coco import coco
+# from datasets.unrealcv import unrealcv
 import numpy as np
 
 # Set up voc_<year>_<split> using selective search "fast" mode

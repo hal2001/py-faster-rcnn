@@ -6,3 +6,7 @@ lib/pycocotools/_mask.so
 output/
 .DS_Store
 *.caffemodel
+data/faster_rcnn_models
+data/faster_rcnn_models.tgz
+data/unrealcv
+output/
